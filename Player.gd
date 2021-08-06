@@ -2,7 +2,7 @@ extends KinematicBody2D
 
 const MOVE_SPEED = 500
 const JUMP_FORCE = 1000
-const GRAVITY = 50
+const GRAVITY = 30
 const MAX_FALL_SPEED = 1000
 
 onready var anim_player = $AnimationPlayer
@@ -10,6 +10,7 @@ onready var sprite = $Sprite
 
 var y_velo = 0
 var facing_right = false
+var jumped = false
 
 func _physics_process(delta):
 	var move_dir = 0
@@ -22,8 +23,12 @@ func _physics_process(delta):
 	
 	var grounded = is_on_floor()
 	y_velo += GRAVITY
-	if grounded and Input.is_action_just_pressed("jump"):
-		y_velo = -JUMP_FORCE
+	if Input.is_action_just_pressed("jump"):
+		if grounded:
+		  y_velo = -JUMP_FORCE
+		elif not jumped:
+			y_velo = -JUMP_FORCE
+			jumped = true
 	if grounded and y_velo >= 0:
 		y_velo = 5
 	if y_velo > MAX_FALL_SPEED:
@@ -39,6 +44,8 @@ func _physics_process(delta):
 			play_anim("idle")
 		else:
 			play_anim("walk")
+
+		jumped = false
 	else:
 		play_anim("jump")
 
